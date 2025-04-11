@@ -1,75 +1,103 @@
 <?php
-    //include il file che mi permette di connettermi al db
-    include 'config.php';
+include 'config.php';
+session_start();
+if (isset($_SESSION['id'])) {
+    //se l'utente è già loggato, reindirizza alla pagina principale
+    header("Location: form.html");
+    exit();
+}
 
-    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        $password = $_POST['password'];
-        $checkPassword = $_POST['checkPassword'];
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $password = $_POST['password'];
+    $checkPassword = $_POST['checkPassword'];
 
-        if ($password === $checkPassword){
-            $email = $_POST['email'];
-            $first_name = $_POST['first-name'];
-            $last_name = $_POST['last-name'];
+    if ($password === $checkPassword) {
+        $email = $_POST['email'];
+        $first_name = $_POST['first-name'];
+        $last_name = $_POST['last-name'];
+        $data_nascita = $_POST['data-nascita'];
+        $genere = $_POST['genere'];
+        $codice_fiscale = $_POST['codice-fiscale'];
+        $telefono = $_POST['telefono'];
+        $id_facolta = $_POST['id-facolta'];
 
-            $sql = "INSERT INTO users(email, password, first_name, last_name) VALUES('$email', '$password', '$first_name' , '$last_name');";
+        $password_hash = password_hash($password, PASSWORD_DEFAULT);
 
-            if($conn->query($sql) === true){
-                echo "Utente registrato con successo!";
-            }else{
-                echo "Errore nell'inserimento";
-            }
-        }else{
-            echo "La password non è corretta! Scrivi 2 volte la stessa password.";
+        $stmt = $conn->prepare("INSERT INTO studente (Nome, Cognome, Data_nascita, Genere, Codice_fiscale, Email, Telefono, Password, ID_facolta) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        $stmt->bind_param("ssssssssi", $first_name, $last_name, $data_nascita, $genere, $codice_fiscale, $email, $telefono, $password_hash, $id_facolta);
+
+        if ($stmt->execute()) {
+            echo "<div class='alert alert-success text-center'>Utente registrato con successo!</div>";
+        } else {
+            echo "<div class='alert alert-danger text-center'>Errore nell'inserimento: " . $stmt->error . "</div>";
         }
-        
+
+        $stmt->close();
+    } else {
+        echo "<div class='alert alert-warning text-center'>La password non è corretta! Scrivi 2 volte la stessa password.</div>";
     }
+}
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="it">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestione Attività Registrazione</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <title>Registrazione Studente</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
-    <form class="row g-3 needs-validation" method="post">
-    <div class="col-md-4">
-        <label for="validationCustom01" class="form-label">First name</label>
-        <input type="text" name="first-name" class="form-control" id="validationCustom01" minlength="2" maxlength="60" required>
-        <div class="valid-feedback">
+<div class="container mt-4">
+    <h1 class="mb-4">Registrazione Studente</h1>
+    <form class="row g-3" method="post">
+        <div class="col-md-4">
+            <label class="form-label">Nome</label>
+            <input type="text" name="first-name" class="form-control" required>
         </div>
-    </div>
-    <div class="col-md-4">
-        <label for="validationCustom02" class="form-label">Last name</label>
-        <input type="text" name="last-name" class="form-control" id="validationCustom02" minlength="2" maxlength="60" required>
-        <div class="valid-feedback">
+        <div class="col-md-4">
+            <label class="form-label">Cognome</label>
+            <input type="text" name="last-name" class="form-control" required>
         </div>
-    </div>
-    <div class="col-md-4">
-        <label for="validationCustom02" class="form-label">Email</label>
-        <input type="email" name="email" class="form-control" id="validationCustom02" maxlength="128" required>
-        <div class="valid-feedback">
+        <div class="col-md-4">
+            <label class="form-label">Email</label>
+            <input type="email" name="email" class="form-control" required>
         </div>
-    </div>
-    <div class="col-md-4">
-        <label for="validationCustom02" class="form-label">Password</label>
-        <input type="password" name="password" class="form-control" id="validationCustom02" required>
-        <div class="valid-feedback">
+        <div class="col-md-4">
+            <label class="form-label">Password</label>
+            <input type="password" name="password" class="form-control" required>
         </div>
-    </div>
-    <div class="col-md-4">
-        <label for="validationCustom02" class="form-label">Ripeti la password</label>
-        <input type="password" name="checkPassword" class="form-control" id="validationCustom02" required>
-        <div class="valid-feedback">
+        <div class="col-md-4">
+            <label class="form-label">Ripeti la password</label>
+            <input type="password" name="checkPassword" class="form-control" required>
         </div>
-    </div>
-    <div class="col-12">
-        <button class="btn btn-primary" type="submit">Register</button>
-    </div>
+        <div class="col-md-4">
+            <label class="form-label">Data di nascita</label>
+            <input type="date" name="data-nascita" class="form-control" required>
+        </div>
+        <div class="col-md-4">
+            <label class="form-label">Genere</label>
+            <select name="genere" class="form-select" required>
+                <option value="M">Maschio</option>
+                <option value="F">Femmina</option>
+            </select>
+        </div>
+        <div class="col-md-4">
+            <label class="form-label">Codice Fiscale</label>
+            <input type="text" name="codice-fiscale" class="form-control" maxlength="16" required>
+        </div>
+        <div class="col-md-4">
+            <label class="form-label">Telefono</label>
+            <input type="text" name="telefono" class="form-control">
+        </div>
+        <div class="col-md-4">
+            <label class="form-label">ID Facoltà</label>
+            <input type="number" name="id-facolta" class="form-control" required>
+            <div class="form-text">Inserisci l'ID della facoltà (es. 1)</div>
+        </div>
+        <div class="col-12">
+            <button class="btn btn-primary" type="submit">Registrati</button>
+        </div>
     </form>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy" crossorigin="anonymous"></script>
+</div>
 </body>
 </html>
