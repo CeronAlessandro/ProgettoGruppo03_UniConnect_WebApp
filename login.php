@@ -1,28 +1,23 @@
 <?php
   include 'config.php';
-  session_start();
 
   if ($_SERVER['REQUEST_METHOD'] === 'POST'){
     $email = $_POST['email'];
     $password = $_POST['password'];
 
-    $sql = "SELECT id, nome, cognome FROM studente WHERE email = '$email' AND password = '$password'";
+    $sql = "SELECT id, Nome, Cognome FROM studente WHERE Email = '$email' AND Password = '$password'";
     $result = $conn->query($sql);
 
-    if (!$result) {
-      die("Errore nella query: " . $conn->error);
-  }
-
-    if($result->num_rows>0){
+    if($result->num_rows > 0){
       echo "Login effettuato con successo!";
-      
+      session_start();
 
       $row = $result->fetch_assoc();
       //salvataggio delle informazioni di sessione
-      $_SESSION['id'] = $row['id'];
+      $_SESSION['id'] = $row['ID'];
       $_SESSION['email'] = $email;
-      $_SESSION['first_name'] = $row['first_name'];
-      $_SESSION['last_name'] = $row['last_name'];
+      $_SESSION['nome'] = $row['Nome'];
+      $_SESSION['cognome'] = $row['Cognome'];
 
       header("Location: index.php");
       exit(); //esco dallo script
@@ -55,7 +50,7 @@
     </form>
 
     <p class="mb-3">Se non sei ancora registrato:<br></p>
-    <a href="register.php">Registrati</a>
+    <a href="register.html">Registrati</a>
 
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy" crossorigin="anonymous"></script>
