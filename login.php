@@ -5,7 +5,7 @@
     $email = $_POST['email'];
     $password = $_POST['password'];
 
-    $sql = "SELECT id, first_name, last_name FROM users WHERE email = '$email' AND password = '$password'";
+    $sql = "SELECT id, Nome, Cognome FROM studente WHERE Email = '$email' AND Password = '$password'";
     $result = $conn->query($sql);
 
     if($result->num_rows > 0){
@@ -14,10 +14,10 @@
 
       $row = $result->fetch_assoc();
       //salvataggio delle informazioni di sessione
-      $_SESSION['id'] = $row['id'];
+      $_SESSION['id'] = $row['ID'];
       $_SESSION['email'] = $email;
-      $_SESSION['first_name'] = $row['first_name'];
-      $_SESSION['last_name'] = $row['last_name'];
+      $_SESSION['nome'] = $row['Nome'];
+      $_SESSION['cognome'] = $row['Cognome'];
 
       header("Location: index.php");
       exit(); //esco dallo script

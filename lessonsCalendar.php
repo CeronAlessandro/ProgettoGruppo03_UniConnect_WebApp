@@ -11,24 +11,24 @@
             <th></th>
             <th>LEZIONE</th>
             <th>GIORNO</th>
-            <th>ORARIO</th>
-            <th>MASSIMO PARTECIPANTI</th>
+            <th>ORA INIZIO</th>
+            <th>ORA FINE</th>
             <tbody>
                 <?php
                     include 'config.php';
 
-                    $sql = "SELECT * FROM classes";
+                    $sql = "SELECT * FROM lezione";
 
                     $result = $conn->query($sql);
 
                     if ($result->num_rows > 0) {
                         while($row = $result->fetch_assoc()) {
                             echo "<tr>";
-                            echo "<td>" . htmlspecialchars($row['id']) . "</td>";
-                            echo "<td>" . htmlspecialchars($row['name']) . "</td>";
-                            echo "<td>" . htmlspecialchars($row['day']) . "</td>";
-                            echo "<td>" . htmlspecialchars($row['time']) . "</td>";
-                            echo "<td>" . htmlspecialchars($row['capacity']) . "</td>";
+                            echo "<td>" . htmlspecialchars($row['ID']) . "</td>";
+                            echo "<td>" . htmlspecialchars($row['Titolo']) . "</td>";
+                            echo "<td>" . htmlspecialchars($row['Data']) . "</td>";
+                            echo "<td>" . htmlspecialchars($row['Ora_inizio']) . "</td>";
+                            echo "<td>" . htmlspecialchars($row['Ora_fine']) . "</td>";
                             echo "</tr>";
                         }
                     } else {
@@ -39,16 +39,6 @@
                 ?>
             </tbody>
         </table>
-    </div>
-
-    <div>
-        <br>
-        <br>
-        <form action="prenotazione.php" method="post">
-            <label for="lesson-numer">Digita il numero della lezione a cui vuoi partecipare:</label><br>
-            <input type="number" name="lesson-number" id="lesson-number">
-            <button type="submit">Prenota</button>
-        </form>
     </div>
 
     <div>

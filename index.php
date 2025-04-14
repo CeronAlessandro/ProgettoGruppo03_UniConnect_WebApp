@@ -17,12 +17,12 @@
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                 <?php 
                 session_start();
-                if(isset($_SESSION['first_name']) && isset($_SESSION['last_name'])): ?>
+                if(isset($_SESSION['nome']) && isset($_SESSION['cognome'])): ?>
                     <li class="nav-item">
                     <a class="nav-link" href="logout.php">Logout</a>
                     </li>
                     <li class="nav-item">
-                    <h4>Ciao, <?php echo htmlspecialchars($_SESSION['first_name']) . ' ' . htmlspecialchars($_SESSION['last_name']); ?>!</h1>
+                    <h4>Ciao, <?php echo htmlspecialchars($_SESSION['nome']) . ' ' . htmlspecialchars($_SESSION['cognome']); ?>!</h1>
                     </li>
                 <?php else: ?>
                     <li class="nav-item">
