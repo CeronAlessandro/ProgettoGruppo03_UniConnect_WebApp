@@ -4,14 +4,19 @@
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $password = $_POST['password'];
-        $checkPassword = $_POST['checkPassword'];
+        $checkPassword = $_POST['checkpassword'];
 
         if ($password === $checkPassword){
-            $email = $_POST['email'];
-            $first_name = $_POST['first-name'];
-            $last_name = $_POST['last-name'];
+            $email = $_POST['Email'];
+            $nome = $_POST['Nome'];
+            $cognome = $_POST['Cognome'];
+            $data_nascita = $_POST['Data_nascita'];
+            $genere = $_POST['Genere'];
+            $codice_fiscale = $_POST['Codice_fiscale'];
+            $telefono = $_POST['Telefono'];
+            $id_facolta = $_POST['Facolta'];
 
-            $sql = "INSERT INTO users(email, password, first_name, last_name) VALUES('$email', '$password', '$first_name' , '$last_name');";
+            $sql = "INSERT INTO studente(Email, Password, Nome, Cognome, Data_nascita, Genere, Codice_fiscale, Telefono, ID_facolta) VALUES('$email', '$password', '$nome' , '$cognome', '$data_nascita', '$genere', '$codice_fiscale', '$telefono', '$id_facolta');";
 
             if($conn->query($sql) === true){
                 echo "Utente registrato con successo!";
@@ -35,35 +40,109 @@
 </head>
 <body>
     <form class="row g-3 needs-validation" method="post">
+    <!-- Nome -->
     <div class="col-md-4">
-        <label for="validationCustom01" class="form-label">First name</label>
-        <input type="text" name="first-name" class="form-control" id="validationCustom01" minlength="2" maxlength="60" required>
+        <label for="Nome" class="form-label">Nome</label>
+        <input type="text" name="Nome" class="form-control" minlength="2" maxlength="50" required>
         <div class="valid-feedback">
         </div>
     </div>
+
+    <!-- Cognome -->
     <div class="col-md-4">
-        <label for="validationCustom02" class="form-label">Last name</label>
-        <input type="text" name="last-name" class="form-control" id="validationCustom02" minlength="2" maxlength="60" required>
+        <label for="Cognome" class="form-label">Cognome</label>
+        <input type="text" name="Cognome" class="form-control" minlength="2" maxlength="50" required>
         <div class="valid-feedback">
         </div>
     </div>
+    
+    <!-- Data di Nascita -->
     <div class="col-md-4">
-        <label for="validationCustom02" class="form-label">Email</label>
-        <input type="email" name="email" class="form-control" id="validationCustom02" maxlength="128" required>
+        <label for="Data_nascita" class="form-label">Data di Nascita</label>
+        <input type="date" name="Data_nascita" class="form-control" required>
+        <div class="valid-feedback"></div>
+    </div>
+
+    <!-- Genere (M/F) -->
+    <div class="col-md-4">
+        <label class="form-label d-block">Genere</label>
+        <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="Genere" id="genereM" value="M">
+            <label class="form-check-label" for="genereM">Maschio</label>
+        </div>
+        <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="Genere" id="genereF" value="F">
+            <label class="form-check-label" for="genereF">Femmina</label>
+        </div>
+    </div>
+
+    <!-- Codice Fiscale -->
+    <div class="col-md-4">
+        <label for="Codice_fiscale" class="form-label">Codice Fiscale</label>
+        <input type="text" name="Codice_fiscale" class="form-control" minlength="16" maxlength="16" required>
+        <div class="valid-feedback"></div>
+    </div>
+
+    <!-- Email -->
+    <div class="col-md-4">
+        <label for="Email" class="form-label">Email</label>
+        <input type="email" name="Email" class="form-control" maxlength="100" required>
         <div class="valid-feedback">
         </div>
     </div>
+
+    <!-- Telefono -->
     <div class="col-md-4">
-        <label for="validationCustom02" class="form-label">Password</label>
-        <input type="password" name="password" class="form-control" id="validationCustom02" required>
+        <label for="Telefono" class="form-label">Telefono</label>
+        <input type="tel" name="Telefono" class="form-control" maxlength="15" pattern="[0-9]+">
+        <div class="valid-feedback"></div>
+    </div>
+
+    <!-- Password -->
+    <div class="col-md-4">
+        <label for="Password" class="form-label">Password</label>
+        <input type="password" name="password" class="form-control" maxlength="255" required>
         <div class="valid-feedback">
         </div>
     </div>
+
+    <!-- Controllo Password -->
     <div class="col-md-4">
-        <label for="validationCustom02" class="form-label">Ripeti la password</label>
-        <input type="password" name="checkPassword" class="form-control" id="validationCustom02" required>
+        <label for="checkPassword" class="form-label">Digita nuovamente la Password</label>
+        <input type="password" name="checkpassword" class="form-control" maxlength="255" required>
         <div class="valid-feedback">
         </div>
+    </div>
+
+    <!-- Università -->
+    <div class="col-md-4">
+        <label for="Universita" class="form-label">Università</label>
+        <select name="Universita" class="form-select" required>
+            <option selected disabled value="">Seleziona...</option>
+            <?php
+                $sql = "SELECT id, nome FROM universita";
+                $result = $conn->query($sql);
+                while($row = $result->fetch_assoc()) {
+                    echo '<option value="'.$row['id'].'">'.$row['nome'].'</option>';
+                }
+            ?>
+        </select>
+        <div class="valid-feedback"></div>
+    </div>
+    <!-- Facoltà -->
+    <div class="col-md-4">
+        <label for="Facolta" class="form-label">Facoltà</label>
+        <select name="Facolta" class="form-select" required>
+            <option selected disabled value="">Seleziona...</option>
+            <?php
+                $sql = "SELECT id, nome FROM facolta";
+                $result = $conn->query($sql);
+                while($row = $result->fetch_assoc()) {
+                    echo '<option value="'.$row['id'].'">'.$row['nome'].'</option>';
+                }
+            ?>
+        </select>
+        <div class="valid-feedback"></div>
     </div>
     <div class="col-12">
         <button class="btn btn-primary" type="submit">Register</button>
