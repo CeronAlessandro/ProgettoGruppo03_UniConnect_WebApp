@@ -41,7 +41,10 @@
 <body>
     <form class="row g-3 needs-validation" method="post">
     <!-- Nome -->
+    <!-- Nome -->
     <div class="col-md-4">
+        <label for="Nome" class="form-label">Nome</label>
+        <input type="text" name="Nome" class="form-control" minlength="2" maxlength="50" required>
         <label for="Nome" class="form-label">Nome</label>
         <input type="text" name="Nome" class="form-control" minlength="2" maxlength="50" required>
         <div class="valid-feedback">
@@ -49,7 +52,11 @@
     </div>
 
     <!-- Cognome -->
+
+    <!-- Cognome -->
     <div class="col-md-4">
+        <label for="Cognome" class="form-label">Cognome</label>
+        <input type="text" name="Cognome" class="form-control" minlength="2" maxlength="50" required>
         <label for="Cognome" class="form-label">Cognome</label>
         <input type="text" name="Cognome" class="form-control" minlength="2" maxlength="50" required>
         <div class="valid-feedback">
@@ -84,7 +91,38 @@
     </div>
 
     <!-- Email -->
+    
+    <!-- Data di Nascita -->
     <div class="col-md-4">
+        <label for="Data_nascita" class="form-label">Data di Nascita</label>
+        <input type="date" name="Data_nascita" class="form-control" required>
+        <div class="valid-feedback"></div>
+    </div>
+
+    <!-- Genere (M/F) -->
+    <div class="col-md-4">
+        <label class="form-label d-block">Genere</label>
+        <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="Genere" id="genereM" value="M">
+            <label class="form-check-label" for="genereM">Maschio</label>
+        </div>
+        <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="Genere" id="genereF" value="F">
+            <label class="form-check-label" for="genereF">Femmina</label>
+        </div>
+    </div>
+
+    <!-- Codice Fiscale -->
+    <div class="col-md-4">
+        <label for="Codice_fiscale" class="form-label">Codice Fiscale</label>
+        <input type="text" name="Codice_fiscale" class="form-control" minlength="16" maxlength="16" required>
+        <div class="valid-feedback"></div>
+    </div>
+
+    <!-- Email -->
+    <div class="col-md-4">
+        <label for="Email" class="form-label">Email</label>
+        <input type="email" name="Email" class="form-control" maxlength="100" required>
         <label for="Email" class="form-label">Email</label>
         <input type="email" name="Email" class="form-control" maxlength="100" required>
         <div class="valid-feedback">
@@ -99,12 +137,25 @@
     </div>
 
     <!-- Password -->
+
+    <!-- Telefono -->
     <div class="col-md-4">
+        <label for="Telefono" class="form-label">Telefono</label>
+        <input type="tel" name="Telefono" class="form-control" maxlength="15" pattern="[0-9]+">
+        <div class="valid-feedback"></div>
+    </div>
+
+    <!-- Password -->
+    <div class="col-md-4">
+        <label for="Password" class="form-label">Password</label>
+        <input type="password" name="password" class="form-control" maxlength="255" required>
         <label for="Password" class="form-label">Password</label>
         <input type="password" name="password" class="form-control" maxlength="255" required>
         <div class="valid-feedback">
         </div>
     </div>
+
+    <!-- Controllo Password -->
 
     <!-- Controllo Password -->
     <div class="col-md-4">
