@@ -1,3 +1,11 @@
+<?php
+    session_start();
+
+    if (isset($_SESSION['login_success']) && $_SESSION['login_success'] == 1) {
+        $success_message = "Login effettuato con successo!";
+        $_SESSION['login_success'] = null;
+    }
+?>
 <!DOCTYPE html>
 <html lang="it"> 
 <head>
@@ -14,6 +22,14 @@
     <!-- Inclusione della navbar da un file PHP esterno -->
     <?php include 'navbar.php'; ?>
 
+    <!-- Alert per i messaggi di successo (visibile solo quando necessario) -->
+    <?php if (isset($success_message)): ?>
+        <div class="alert alert-success alert-top alert-animation text-center">
+            <i class="bi bi-check-circle me-2"></i>
+            <?php echo $success_message; ?>
+        </div>
+    <?php endif; ?>
+
     <!-- Sezione Hero: immagine + slogan principale -->
     <section class="hero-section">
         <div class="container">
@@ -24,7 +40,6 @@
                     <p class="lead hero-subtitle">Accedi a tutti i tuoi corsi, scarica appunti e collabora con i tuoi compagni di classe da qualsiasi dispositivo.</p>
                     <div class="hero-cta">
                         <?php
-                            session_start(); // Inizia la sessione
                             // Se l'utente è loggato, vai ai corsi
                             if(isset($_SESSION['id'])){
                                 echo '<a href="corsi.php" class="btn btn-primary btn-lg me-3">Inizia Ora</a>';
@@ -122,12 +137,12 @@
                 
                 <!-- Pulsante per scaricare l'app -->
                 <div class="app-buttons">
-                    <a href="#" class="btn btn-dark btn-lg google-play">
+                    <a href="https://github.com/LuraghiMatteo/UniConnect.git" class="btn btn-dark btn-lg google-play">
                         <i class="bi bi-google-play me-2"></i>Google Play
                     </a>
                 </div>
 
-                <!-- Immagine dell'app -->
+                    <!-- Immagine dell'app -->
                 <div class="app-image mt-5">
                     <img src="IMG/Index4.jpeg" alt="App mobile" class="img-fluid rounded mobile-app-preview">
                 </div>
@@ -195,6 +210,33 @@
                 easing: 'easeOutQuad',
                 duration: 800
             });
+
+            // Animate alerts if present
+            anime({
+                targets: '.alert',
+                translateY: [-10, 0],
+                opacity: [0, 1],
+                duration: 500,
+                easing: 'easeOutQuad',
+                delay: 300
+            });
+            
+            // Auto-hide success alerts after 5 seconds
+            const successAlert = document.querySelector('.alert-success');
+            if (successAlert) {
+                setTimeout(function() {
+                    anime({
+                        targets: successAlert,
+                        opacity: 0,
+                        translateY: -10,
+                        duration: 500,
+                        easing: 'easeInQuad',
+                        complete: function() {
+                            successAlert.style.display = 'none';
+                        }
+                    });
+                }, 5000);
+            }
         });
     </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>

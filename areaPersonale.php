@@ -4,7 +4,28 @@
 
     // Controlla se l'utente è loggato
     if(isset($_SESSION['id'])):
+        // Connessione al database
+        include 'config.php';
+
+        // Query per ottenere il numero di corsi e i nomi della facoltà e dell'università
+        $sql = "SELECT 
+                    u.Nome AS nome_universita,
+                    f.Nome AS nome_facolta,
+                    COUNT(c.ID) AS numero_corsi
+                FROM studente s
+                JOIN facolta f ON s.ID_facolta = f.ID
+                JOIN universita u ON f.ID_universita = u.ID
+                JOIN corso c ON c.ID_facolta = f.ID
+                WHERE s.ID = ". $_SESSION['id'] . "
+                GROUP BY u.Nome, f.Nome;";
+        $result = $conn->query($sql);
+
+        $row = $result->fetch_assoc();
+        $numeroCorsi = $row['numero_corsi'];
+        $nomeUniversita = $row['nome_universita'];
+        $nomeFacolta = $row['nome_facolta'];
 ?>
+
 <!DOCTYPE html>
 <html lang="it">
 <head>
@@ -12,7 +33,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>UniCorsi - Area Personale</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="areaPersonaleStyle.css">
+    <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.2/dist/gsap.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
@@ -29,9 +50,11 @@
                     <div class="profile-avatar mx-auto">
                         <i class="bi bi-person-circle"></i> <!-- Icona utente -->
                     </div>
-                    <h1 class="profile-name mt-3">Marco Rossi</h1>
-                    <p class="profile-role">Studente di Ingegneria Informatica</p>
-                    <p class="profile-university">Università di Milano</p>
+                    <?php
+                        echo "<h1 class=\"profile-name mt-3\">" . htmlspecialchars($_SESSION['nome']) . " " . htmlspecialchars($_SESSION['cognome']) . "</h1>";
+                        echo "<p class=\"profile-role\">Studente di " . htmlspecialchars($nomeFacolta) . "</p>";
+                        echo "<p class=\"profile-university\">" . htmlspecialchars($nomeUniversita) . "</p>";
+                        ?>
                 </div>
             </div>
         </div>
@@ -51,7 +74,9 @@
                                 <p class="info-label">Email:</p>
                             </div>
                             <div class="col-md-8">
-                                <p class="info-value">marco.rossi@studenti.unimi.it</p>
+                                <?php
+                                    echo "<p class=\"info-value\">" . htmlspecialchars($_SESSION['email']) . "</p>";
+                                ?>
                             </div>
                         </div>
 
@@ -61,19 +86,29 @@
                                 <p class="info-label">Matricola:</p>
                             </div>
                             <div class="col-md-8">
-                                <p class="info-value">845721</p>
+                                <?php
+                                    echo  "<p class=\"info-value\">". htmlspecialchars($_SESSION['id'])."</p>";
+                                ?>
                             </div>
                         </div>
 
-                        <!-- Anno di corso -->
+                        <!-- Anno di corso
                         <div class="info-group row mb-3">
                             <div class="col-md-4">
                                 <p class="info-label">Anno di corso:</p>
                             </div>
                             <div class="col-md-8">
-                                <p class="info-value">3° anno</p>
+                                <?php
+                                    // // Query per calcolare da quanto tempo lo studente è iscritto in anni
+                                    // $sql = "SELECT";
+                                    // $result = $conn->query($sql);
+
+                                    // $row = $result->fetch_assoc();
+                                    // $numeroCorsi = $row['numero_corsi'];
+                                    // //echo "<p class=\"info-value\">".htmlspecialchars($anno_corso). "</p>";
+                                ?>
                             </div>
-                        </div>
+                        </div> -->
 
                         <!-- Corso di laurea -->
                         <div class="info-group row mb-3">
@@ -81,7 +116,9 @@
                                 <p class="info-label">Corso di laurea:</p>
                             </div>
                             <div class="col-md-8">
-                                <p class="info-value">Laurea in Ingegneria Informatica</p>
+                                <?php
+                                    echo "<p class=\"profile-role\">Laurea in  " . htmlspecialchars($nomeFacolta) . "</p>";
+                                ?>
                             </div>
                         </div>
                     </div>
@@ -105,7 +142,9 @@
                                     <div class="stat-icon">
                                         <i class="bi bi-book"></i>
                                     </div>
-                                    <h3 class="stat-number">12</h3>
+                                    <?php
+                                        echo "<h3 class=\"stat-number\">" . $numeroCorsi . "</h3>";
+                                    ?>
                                     <p class="stat-label">Corsi Iscritti</p>
                                 </div>
                             </div>
@@ -116,19 +155,39 @@
                                     <div class="stat-icon">
                                         <i class="bi bi-pencil-square"></i>
                                     </div>
-                                    <h3 class="stat-number">24</h3>
+                                    <?php
+                                        // Query per ottenere il numero di appunti caricati
+                                        $sql = "SELECT COUNT(*) AS numero_appunti
+                                                FROM nota AS n
+                                                WHERE n.ID = ". $_SESSION['id'] . ";";
+                                        $result = $conn->query($sql);
+
+                                        $row = $result->fetch_assoc();
+                                        echo "<h3 class=\"stat-number\">" . $row['numero_appunti'] . "</h3>";
+                                    ?>
                                     <p class="stat-label">Appunti Condivisi</p>
                                 </div>
                             </div>
 
-                            <!-- Download effettuati -->
+                            <!-- CFU totali ottenuti -->
                             <div class="col-md-4">
                                 <div class="stat-item text-center">
                                     <div class="stat-icon">
                                         <i class="bi bi-download"></i>
                                     </div>
-                                    <h3 class="stat-number">156</h3>
-                                    <p class="stat-label">Download</p>
+                                    <?php
+                                        // Query per ottenere il numero di appunti caricati
+                                        $sql = "SELECT SUM(c.CFU_totali) AS totale_cfu
+                                                FROM studente s
+                                                JOIN facolta f ON s.ID_facolta = f.ID
+                                                JOIN corso c ON c.ID_facolta = f.ID
+                                                WHERE s.ID = ". $_SESSION['id'] . ";";
+                                        $result = $conn->query($sql);
+
+                                        $row = $result->fetch_assoc();
+                                        echo "<h3 class=\"stat-number\">" . $row['totale_cfu'] . "</h3>";
+                                    ?>
+                                    <p class="stat-label">CFU Ottenuti</p>
                                 </div>
                             </div>
                         </div>

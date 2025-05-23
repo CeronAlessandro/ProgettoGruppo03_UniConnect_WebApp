@@ -1,42 +1,40 @@
+<?php
+    // Connessione al database
+    include 'config.php';
+
+    // Recupera l'ID del corso
+    $id_corso = $_GET['id'];
+
+    // Query per ottenere i dettagli del corso
+    $sql = "SELECT corso.* , professore.Nome AS NomeProfessore, professore.Cognome AS CognomeProfessore
+            FROM corso
+            JOIN professore ON corso.ID_professore = professore.ID
+            WHERE corso.ID = ". $id_corso . ";";
+    $result = $conn->query($sql);
+
+    $row = $result->fetch_assoc();
+    $nomeProfessore = $row['NomeProfessore'];
+    $cognomeProfessore = $row['CognomeProfessore'];
+    $cfu = $row['CFU_totali'];
+    $nomeCorso = $row['Nome'];
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>UniCorsi - Dettaglio Corso</title>
+    <title>UniConnect - Dettaglio Corso</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 </head>
 <body>
-    <!-- Navbar principale -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-        <div class="container">
-            <!-- Logo e nome sito -->
-            <a class="navbar-brand d-flex align-items-center" href="index.html">
-                <i class="bi bi-book me-2"></i>
-                <span class="fw-bold">UniCorsi</span>
-            </a>
-            <!-- Bottone per menu mobile -->
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <!-- Link della navbar -->
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item"><a class="nav-link active" href="index.html">Corsi</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#">Calendario</a></li>
-                    <li class="nav-item ms-2">
-                        <!-- Icona utente -->
-                        <div class="user-icon"><i class="bi bi-person"></i></div>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </nav>
+    <!-- Navbar-->
+    <?php include 'navbar.php';?>
 
     <!-- Contenuto principale -->
-    <div class="container my-5">
+    <div class="container my-5 page-content">
         <!-- Link per tornare alla lista dei corsi -->
         <a href="corsi.php" class="text-decoration-none text-primary d-inline-block mb-4">
             <i class="bi bi-arrow-left me-1"></i> Torna ai corsi
@@ -44,11 +42,17 @@
 
         <!-- Intestazione del corso -->
         <div class="course-header p-4 mb-5 rounded">
-            <h1 class="text-white mb-2">Introduzione alla Programmazione</h1>
+            <?php echo "<h1 class=\"text-white mb-2\">" . htmlspecialchars($nomeCorso) . "</h1>"; ?>
             <div class="d-flex text-white opacity-75 small">
-                <div class="me-3"><i class="bi bi-person me-1"></i> Prof. Marco Rossi</div>
-                <div class="me-3"><i class="bi bi-calendar me-1"></i> Primo Semestre</div>
-                <div><i class="bi bi-clock me-1"></i> 6 CFU</div>
+                <?php  
+                    echo "<div class=\"me-3\"><i class=\"bi bi-person me-1\"></i>" . htmlspecialchars($nomeProfessore) . " " . htmlspecialchars($cognomeProfessore)  . "</div>"; 
+                    echo "<div class=\"me-3\"><i class=\"bi bi-calendar me-1\"></i> Dal " 
+                        . date("d/m/Y", strtotime($row['Data_inizio'])) 
+                        . " al " 
+                        . date("d/m/Y", strtotime($row['Data_fine']))  
+                        . "</div>"; 
+                    echo "<div><i class=\"bi bi-clock me-1\"></i>" . htmlspecialchars($cfu) . " CFU</div>";
+                ?>
             </div>
         </div>
 
@@ -68,39 +72,19 @@
                         <h3 class="card-title h5 mb-4">Informazioni corso</h3>
                         
                         <?php
-                            // Connessione al database
-                            include 'config.php';
-
-                            // Recupera l'ID del corso
-                            $id_corso = $_GET['id'];
-
-                            // Query per ottenere i dettagli del corso
-                            $sql = "SELECT corso.* , professore.Nome AS NomeProfessore, professore.Cognome AS CognomeProfessore
-                                    FROM corso
-                                    JOIN professore ON corso.ID_professore = professore.ID
-                                    WHERE corso.ID = ". $id_corso . ";";
-                            $result = $conn->query($sql);
-
-                            // Stampa delle informazioni se presenti
-                            if ($result->num_rows > 0) {
-                                while($row = $result->fetch_assoc()) {
-                                    echo "<div class=\"mb-3\">";
-                                    echo "<span class=\"d-block text-primary fw-semibold\">Professore</span>";
-                                    echo "<span>" . htmlspecialchars($row['NomeProfessore']) . " " . htmlspecialchars($row['CognomeProfessore'])  . "</span>";
-                                    echo "</div>";
-                                    echo "<div class=\"mb-3\">";
-                                    echo "<span class=\"d-block text-primary fw-semibold\">Lingua</span>";
-                                    echo "<span>" . htmlspecialchars($row['Lingua']) . "</span>";
-                                    echo "</div>";
-                                    echo "<div class=\"mb-3\">";
-                                    echo "<span class=\"d-block text-primary fw-semibold\">Crediti</span>";
-                                    echo "<span>" . htmlspecialchars($row['CFU_totali']) . " CFU</span>";
-                                    echo "</div>";
-                                }
-                            } else {
-                                // Messaggio se il corso non esiste
-                                echo '<h4 class="mb-4">Non sono presenti corsi per questa facoltà</h4>';
-                            }
+                            // Stampa delle informazioni
+                            echo "<div class=\"mb-3\">";
+                            echo "<span class=\"d-block text-primary fw-semibold\">Professore</span>";
+                            echo "<span>" . htmlspecialchars($nomeProfessore) . " " . htmlspecialchars($cognomeProfessore)  . "</span>";
+                            echo "</div>";
+                            echo "<div class=\"mb-3\">";
+                            echo "<span class=\"d-block text-primary fw-semibold\">Lingua</span>";
+                            echo "<span>" . htmlspecialchars($row['Lingua']) . "</span>";
+                            echo "</div>";
+                            echo "<div class=\"mb-3\">";
+                            echo "<span class=\"d-block text-primary fw-semibold\">Crediti</span>";
+                            echo "<span>" . htmlspecialchars($row['CFU_totali']) . " CFU</span>";
+                            echo "</div>";
                         ?>
                     </div>
                 </div>
@@ -132,9 +116,9 @@
                             while($row = $result->fetch_assoc()) {
                                 echo "<tr>";
                                 echo "<td>15/09/2024</td>";
-                                echo "<td>Introduzione a Python e ambiente di sviluppo</td>"; 
+                                echo "<td>" . htmlspecialchars($row['Titolo']) . "</td>"; 
                                 echo "<td class=\"text-end\">";
-                                echo "<a href=\"#\" class=\"btn btn-sm btn-outline-secondary\">";
+                                echo "<a href=\"visualizzaAppunti.php?id=" . $row['ID'] . "\" class=\"btn btn-sm btn-outline-secondary\">";
                                 echo "<i class=\"bi bi-file-text me-1\"></i> Visualizza";
                                 echo "</a>";
                                 echo "</td>";
@@ -151,10 +135,11 @@
 
         <!-- Bottone per aggiungere nuovi appunti -->
         <div class="text-center">
-            <a href="uploadAppunti.php" class="btn btn-lg btn-accent">
+            <a class="btn btn-lg btn-accent" href="uploadAppunti.php?id_corso=<?php echo htmlspecialchars($id_corso); ?>">
                 <i class="bi bi-plus me-2"></i> Aggiungi Appunti
             </a>
         </div>
+
     </div>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"></script>

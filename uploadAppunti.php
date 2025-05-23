@@ -3,27 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>UniConnect - Aggiungi Appunti</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title>UniCorsi - Aggiungi Appunti</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
 </head>
 <body>
-    <?php include 'navbar.php'; ?>
+    <!-- Navbar -->
+    <?php include 'navbar.php';?>
     
     <div class="container mt-4 page-content">
-        <div class="d-flex align-items-center mb-4">
-            <a href="javascript:history.back()" class="text-decoration-none text-primary">
-                <i class="bi bi-arrow-left me-1"></i> Torna al corso
+        <div class="d-flex align-items-center mb-4 back-link">
+            <a href="javascript:history.back()" class="text-decoration-none btn btn-link ps-0">
+                <i class="bi bi-arrow-left me-2"></i> Torna al corso
             </a>
         </div>
         
-        <div class="card">
-            <div class="card-header">
-                <h2 class="mb-0">Aggiungi Appunti</h2>
+        <div class="card notes-card shadow">
+            <div class="card-header bg-light py-4">
+                <h2 class="mb-2 fw-bold text-primary-dark">Aggiungi Appunti</h2>
                 <p class="text-muted mb-0">Aggiungi appunti per il corso. Puoi scrivere direttamente o caricare un file.</p>
             </div>
-            <div class="card-body">
+            <div class="card-body p-4">
                 <!-- Tab navigation -->
                 <ul class="nav nav-tabs mb-4" id="myTab" role="tablist">
                     <li class="nav-item" role="presentation">
@@ -41,26 +43,49 @@
                 <!-- Tab content -->
                 <div class="tab-content" id="myTabContent">
                     <!-- Editor tab -->
-                    <div class="tab-pane fade-in" id="editor" role="tabpanel" aria-labelledby="editor-tab">
+                    <div class="tab-pane fade show active animate-tab" id="editor" role="tabpanel" aria-labelledby="editor-tab">
                         <form id="editor-form">
-                            <div class="mb-3">
-                                <label for="note-title" class="form-label">Titolo Nota</label>
+                            <div class="mb-4 form-floating">
                                 <input type="text" class="form-control" id="note-title" placeholder="Inserisci un titolo per i tuoi appunti" required>
+                                <label for="note-title">Titolo Nota</label>
                             </div>
-                            <div class="mb-3">
-                                <label for="editor-lesson-select" class="form-label">Lezione</label>
+                            <div class="mb-4 form-floating">
                                 <select class="form-select" id="editor-lesson-select" required>
-                                    <option value="" selected disabled>Seleziona la lezione a cui si riferiscono gli appunti</option>
-                                    <!-- Le opzioni verranno popolate dinamicamente -->
+                                    <option value="" selected disabled>Seleziona la lezione</option>
+                                    <?php
+                                        include "config.php";
+
+                                        $lezioni = [];
+
+                                        // Query per recuperare le lezioni del corso
+                                        $sql = "SELECT *
+                                                FROM lezione
+                                                WHERE lezione.ID_Corso = " . $_GET['id_corso'] . "
+                                                ORDER BY lezione.Data, lezione.Ora_inizio;";
+                                        $result = $conn->query($sql);
+
+                                        // Mostra una riga per ogni lezione trovata
+                                        if ($result->num_rows > 0) {
+                                            while ($row = $result->fetch_assoc()) {
+                                                $lezioni[] = $row;
+                                            }
+                                            foreach ($lezioni as $lezione) {
+                                                echo "<option value=\"" . htmlspecialchars($row['ID']) . "\"> " . htmlspecialchars($lezione['Titolo']) . "</option>";
+                                            }
+                                        }
+                                    ?>
                                 </select>
+                                <label for="editor-lesson-select">Lezione</label>
                             </div>
-                            <div class="mb-3">
+                            <div class="mb-4">
                                 <label for="note-content" class="form-label">Scrivi qui la nota</label>
                                 <textarea class="form-control" id="note-content" rows="12" placeholder="Scrivi i tuoi appunti qui..." required></textarea>
                             </div>
                             <div class="text-end">
-                                <button type="button" class="btn btn-secondary me-2" onclick="history.back()">Annulla</button>
-                                <button type="submit" class="btn btn-primary">
+                                <button type="button" class="btn btn-outline-secondary me-2 btn-lg" onclick="history.back()">
+                                    <i class="bi bi-x-circle me-1"></i> Annulla
+                                </button>
+                                <button type="submit" class="btn btn-primary btn-lg">
                                     <i class="bi bi-save me-1"></i> Salva
                                 </button>
                             </div>
@@ -68,27 +93,52 @@
                     </div>
                     
                     <!-- Upload tab -->
-                    <div class="tab-pane fade-out" id="upload" role="tabpanel" aria-labelledby="upload-tab">
+                    <div class="tab-pane fade animate-tab" id="upload" role="tabpanel" aria-labelledby="upload-tab">
                         <form id="upload-form">
-                            <div class="mb-3">
-                                <label for="upload-title" class="form-label">Titolo Nota</label>
+                            <div class="mb-4 form-floating">
                                 <input type="text" class="form-control" id="upload-title" placeholder="Inserisci un titolo per i tuoi appunti" required>
+                                <label for="upload-title">Titolo Nota</label>
                             </div>
-                            <div class="mb-3">
-                                <label for="upload-lesson-select" class="form-label">Lezione</label>
+                            <div class="mb-4 form-floating">
                                 <select class="form-select" id="upload-lesson-select" required>
-                                    <option value="" selected disabled>Seleziona la lezione a cui si riferiscono gli appunti</option>
-                                    <!-- Le opzioni verranno popolate dinamicamente -->
+                                    <option value="" selected disabled>Seleziona la lezione</option>
+                                    <?php
+                                        // Mostra una riga per ogni lezione trovata
+                                        if ($result->num_rows > 0) {
+                                            foreach ($lezioni as $lezione) {
+                                                echo "<option value=\"" . htmlspecialchars($row['ID']) . "\"> " . htmlspecialchars($lezione['Titolo']) . "</option>";
+                                            }
+                                        }
+                                        $conn->close();
+                                    ?>
                                 </select>
+                                <label for="upload-lesson-select">Lezione</label>
                             </div>
-                            <div class="mb-3">
+                            <div class="mb-4">
                                 <label for="file-upload" class="form-label">Carica il tuo file</label>
-                                <input class="form-control" type="file" id="file-upload" required>
-                                <div id="file-selected" class="file-selected d-none"></div>
+                                <div class="file-upload-container">
+                                    <input class="form-control form-control-lg" type="file" id="file-upload" required>
+                                    <div class="mt-3 d-none" id="file-preview">
+                                        <div class="card bg-light p-3">
+                                            <div class="d-flex align-items-center">
+                                                <i class="bi bi-file-earmark-text fs-1 me-3 text-accent"></i>
+                                                <div>
+                                                    <h5 class="mb-1 file-name">filename.pdf</h5>
+                                                    <p class="mb-0 text-muted file-size">Size: 2.3 MB</p>
+                                                </div>
+                                                <button type="button" class="btn btn-sm btn-outline-danger ms-auto" id="remove-file">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                             <div class="text-end">
-                                <button type="button" class="btn btn-secondary me-2" onclick="history.back()">Annulla</button>
-                                <button type="submit" class="btn btn-primary">
+                                <button type="button" class="btn btn-outline-secondary me-2 btn-lg" onclick="history.back()">
+                                    <i class="bi bi-x-circle me-1"></i> Annulla
+                                </button>
+                                <button type="submit" class="btn btn-primary btn-lg">
                                     <i class="bi bi-cloud-arrow-up me-1"></i> Carica
                                 </button>
                             </div>
@@ -101,7 +151,7 @@
     
     <!-- Toast notification -->
     <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
-        <div id="successToast" class="toast align-items-center text-white bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+        <div id="successToast" class="toast align-items-center text-white bg-success border-0 shadow-lg" role="alert" aria-live="assertive" aria-atomic="true">
             <div class="d-flex">
                 <div class="toast-body">
                     <i class="bi bi-check-circle me-2"></i>
@@ -113,7 +163,69 @@
     </div>
     
     <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Animation with anime.js
+        document.addEventListener('DOMContentLoaded', function() {
+            // Animate back link
+            anime({
+                targets: '.back-link',
+                translateX: ['-20px', '0px'],
+                opacity: [0, 1],
+                easing: 'easeOutQuad',
+                duration: 800
+            });
+            
+            // Animate card
+            anime({
+                targets: '.notes-card',
+                translateY: ['20px', '0px'],
+                opacity: [0, 1],
+                easing: 'easeOutExpo',
+                duration: 1000,
+                delay: 200
+            });
+            
+            // Tab animations
+            document.querySelectorAll('.nav-link').forEach(tab => {
+                tab.addEventListener('click', function() {
+                    anime({
+                        targets: '.animate-tab',
+                        opacity: [0, 1],
+                        translateY: ['10px', '0px'],
+                        easing: 'easeOutQuad',
+                        duration: 400
+                    });
+                });
+            });
+            
+            // Form submission animations
+            ['editor-form', 'upload-form'].forEach(formId => {
+                const form = document.getElementById(formId);
+                if(form) {
+                    form.addEventListener('submit', function(e) {
+                        e.preventDefault();
+                        
+                        // Show toast
+                        const toast = new bootstrap.Toast(document.getElementById('successToast'));
+                        toast.show();
+                        
+                        // Success animation
+                        anime({
+                            targets: '.card',
+                            scale: [1, 1.02, 1],
+                            duration: 800,
+                            easing: 'easeInOutQuad'
+                        });
+                        
+                        // In a real application, you would send form data to the server here
+                        console.log('Form submitted:', formId);
+                    });
+                }
+            });
+        });
+    </script>
 </body>
 </html>
 

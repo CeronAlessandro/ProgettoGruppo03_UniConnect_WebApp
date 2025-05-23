@@ -1,4 +1,3 @@
-<link rel="stylesheet" href="style.css">
 <footer class="footer bg-dark text-light py-5"> 
     <div class="container">
         <div class="row">
